@@ -1,0 +1,57 @@
+{
+    "x_label": "x-label",
+    "y_label": "y-label",
+    "data": [
+        {
+            "id": 1,
+            "x": 1,
+            "y": 8,
+            "type": "normal"
+        },
+        {
+            "id": 2,
+            "x": 2,
+            "y": 13,
+            "type": "normal"
+        }, 
+        {
+            "id": 3,
+			"x": 3,
+			"y": 19,
+			"type": "normal"
+		},
+		{
+            "id": 4,
+			"x": 4,
+			"y": 42,
+			"type": "normal"
+		},
+		{
+            "id": 5,
+			"x": 5,
+			"y": {
+                "value": 25,
+                "function": "std-deviation"
+            },
+			"type": "uncertain"
+		},
+        {
+            "id": 6,
+			"x": 6,
+			"y": 31,
+			"type": "normal"
+		},
+        {
+            "id": 7,
+			"x": 7,
+			"y": 38,
+			"type": "normal"
+		},
+        {
+            "id": 8,
+			"x": 8,
+			"y": 43,
+			"type": "normal"
+		}
+    ]
+}
