@@ -1,9 +1,12 @@
 class CorrectedDatapoint {
     constructor(id, x, y) {
         this.id = id
+        this.x_corrected = false
+        this.y_corrected = false
         if (typeof(x) === "object") {
             this.x = x.corrected
             this.x_original = x.original
+            this.x_corrected = true
         } else {
             this.x = x
             this.x_original = x
@@ -14,6 +17,7 @@ class CorrectedDatapoint {
         } else {
             this.y = y
             this.y_original = y
+            this.y_corrected = true
         }
         this.type = "corrected"
     }

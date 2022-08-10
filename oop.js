@@ -46,7 +46,7 @@ g.append("g")
 	.attr("class", "y axis")
 	.call(yAxisCall)
 
-d3.json("data/missing.json").then(function(data) {
+d3.json("data/combined.json").then(function(data) {
 	// Create Databank
     const dataBank = new DataBank()
 	// Add datapoints into databank
@@ -67,6 +67,31 @@ d3.json("data/missing.json").then(function(data) {
 
 
 	// Calculate errorbars and add into databank
+	// dataBank.uncertain.forEach(dp => {
+	// 	if (dp.xError) {
+	// 		const deviation = dataBank.deviation()[0]
+	// 		dp.xErrorBar.x1 = dp.x - deviation
+	// 		dp.xErrorBar.x2 = dp.x + deviation
+	// 		dp.xErrorBar.y1 = dp.y
+	// 		dp.xErrorBar.y2 = dp.y
+	// 	}
+
+	// 	if (dp.yError) {
+	// 		const deviation = dataBank.deviation()[0]
+	// 		dp.yErrorBar.x1 = dp.x
+	// 		dp.yErrorBar.x2 = dp.x
+	// 		dp.yErrorBar.y1 = dp.y - deviation
+	// 		dp.yErrorBar.y2 = dp.y + deviation
+	// 	}
+	// })
+	console.log(dataBank)
+
+
+	update(dataBank)
+})
+
+function update(dataBank) {
+	// Calculate errorbars and add into databank
 	dataBank.uncertain.forEach(dp => {
 		if (dp.xError) {
 			const deviation = dataBank.deviation()[0]
@@ -84,13 +109,6 @@ d3.json("data/missing.json").then(function(data) {
 			dp.yErrorBar.y2 = dp.y + deviation
 		}
 	})
-	console.log(dataBank)
-
-
-	update(dataBank)
-})
-
-function update(dataBank) {
 
 	// Add normal datapoints
 	const normalDatapoints = g.selectAll(".normal")
@@ -187,10 +205,63 @@ function update(dataBank) {
 		.attr("y1", d => y(d.missingLine.y1))
 		.attr("y2", d => y(d.missingLine.y2))
 		.attr("stroke", "black")
-		.attr("stroke-width", 1)
+		.attr("stroke-width", 4)
 		.attr("opacity", 0.1)
+		.on("click", function(event, datapoint) {
+			dataBank.missingToUncertain(datapoint.id)
+			update(dataBank)
+		})
+	
+	// Add corrected datapoints
+
+	// Add connecting line at bottom layer
+	const correctionLine = g.selectAll(".correction")
+		.data(dataBank.corrected, d => d.id)
+
+	correctionLine.exit().remove()
+	correctionLine.enter().append("line")
+		.attr("class", "correction")
+		.attr("x1", d => x(d.x))
+		.attr("y1", d => y(d.y))
+		.attr("x2", d => x(d.x_original))
+		.attr("y2", d => y(d.y_original))
+		.attr("stroke", "red")
+		.attr("stroke-width", 2)
+
+	// Add corrected datapoint
+	const correctedDatapoints = g.selectAll(".corrected")
+		.data(dataBank.corrected, d => d.id)
+
+	correctedDatapoints.exit().remove()
+	correctedDatapoints.enter().append("circle")
+		.attr("class", "corrected")
+		.attr("cy", d => y(d.y))
+		.attr("cx", d => x(d.x))
+		.attr("r", 4)
+		.attr("fill", "grey")
+		.on("click", function(event, datapoint) {
+			dataBank.correctedToNormal(datapoint.id)
+			update(dataBank)
+		})
+
+	// Add original datapoint
+	const originalDatapoints = g.selectAll(".original")
+		.data(dataBank.corrected, d => d.id)
+
+	originalDatapoints.exit().remove()
+	originalDatapoints.enter().append("circle")
+		.attr("class", "original")
+		.attr("cy", d => y(d.y_original))
+		.attr("cx", d => x(d.x_original))
+		.attr("r", 4)
+		.attr("fill", "red")
+		.on("click", function(event, datapoint) {
+			dataBank.originalToNormal(datapoint.id)
+			update(dataBank)
+		})
 	
 	
+
 	
 
 

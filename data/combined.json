@@ -1,0 +1,69 @@
+{
+    "x_label": "x-label",
+    "y_label": "y-label",
+    "data": [
+        {
+            "id": 1,
+            "x": {
+                "original": 0.81,
+                "corrected": 1
+            },
+            "y": {
+                "original": 13,
+                "corrected": 8
+            },
+            "type": "corrected"
+        },
+        {
+            "id": 2,
+            "x": 2,
+            "y": 13,
+            "type": "normal"
+        }, 
+        {
+            "id": 3,
+			"x": 3,
+			"y": "null",
+			"type": "missing"
+		},
+		{
+            "id": 4,
+			"x": 4,
+			"y": {
+                "value": 20,
+                "function": "std-deviation"
+            },
+			"type": "uncertain"
+		},
+		{
+            "id": 5,
+			"x": 5,
+			"y": {
+                "corrected": 25,
+                "original": 28
+            },
+			"type": "corrected"
+		},
+        {
+            "id": 6,
+			"x": 6,
+			"y": 31,
+			"type": "normal"
+		},
+        {
+            "id": 7,
+			"x": {
+                "corrected": 7,
+                "original": 6.8
+            },
+			"y": 38,
+			"type": "corrected"
+		},
+        {
+            "id": 8,
+			"x": 8,
+			"y": 43,
+			"type": "normal"
+		}
+    ]
+}
