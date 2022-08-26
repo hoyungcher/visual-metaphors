@@ -1,6 +1,7 @@
 class MissingDatapoint {
     constructor(id, x, y) {
         this.id = id
+        this.type = "missing"
         this.x_missing = false
         this.y_missing = false
         this.missingLine = {}

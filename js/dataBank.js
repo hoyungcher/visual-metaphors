@@ -1,4 +1,6 @@
 // Acts as centralised store of datapoints
+// Also provides functions for conversion between different datapoint types
+// Also provides functions for implementing statistical functions
 class DataBank {
     constructor() {
         // constructs lists for each type of data
@@ -9,6 +11,7 @@ class DataBank {
         this.corrected = []
     }
 
+    // Returns all datapoints with valid values
     validDatapoints() {
         return this.normal.concat(this.outlier.concat(this.uncertain.concat(this.corrected)))
     }
