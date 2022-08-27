@@ -5,15 +5,30 @@
         
     </head>
     <body>
-        <label for="imputation-function">Missing Data :</label>
-        <select name="imputation" id="imputation-function">
-            <option value="">--Please choose an option--</option>
-            <option value="interpolate">Interpolate</option>
-            <option value="mean">Mean</option>
-            <option value="zero">Zero</option>
-            <option value="delete">Delete data point</option>
+        <h1 style="font-family:verdana;font-size:20px">Explora: An interactive visualisation and imputation tool</h1>
+        <label for="data-source" style="font-family:verdana; font-size:12px">Data source:</label>
+        <select name="data" id="data-source" onchange="getData()">
+            <option value="http://127.0.0.1:8000/">Normal dataset</option>
+            <option value="http://127.0.0.1:8000/missing">Missing dataset</option>
+            <option value="http://127.0.0.1:8000/uncertain">Uncertain dataset</option>
+            <option value="http://127.0.0.1:8000/corrected">Corrected dataset</option>
         </select>
-        <div id="chart-area"></div>
+        
+        
+        <div id="explora">
+            <label for="imputation-function" style="font-family:verdana; font-size:12px">Imputation method:</label>
+            <select name="imputation" id="imputation-function">
+                <option value="">--Please choose an option--</option>
+                <option value="interpolate">Interpolate</option>
+                <option value="mean">Mean</option>
+                <option value="zero">Zero</option>
+                <option value="delete">Delete data point</option>
+            </select>
+            <br />
+            <div id="chart-area"></div>
+
+        </div>
+        
         <script src="https://d3js.org/d3.v7.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
         <script src="js/normal.js"></script>

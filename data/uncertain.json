@@ -38,7 +38,11 @@
         {
             "id": 6,
 			"x": 6,
-			"y": 31,
+			"y": {
+                "value": 31,
+                "function": "percentage",
+                "error": 10
+            },
 			"type": "normal"
 		},
         {

@@ -1,4 +1,8 @@
-const MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 130 }
+// Dataset links
+
+
+// SVG dimensions
+const MARGIN = { LEFT: 80, RIGHT: 20, TOP: 20, BOTTOM: 80 }
 const WIDTH = 600 - MARGIN.LEFT - MARGIN.RIGHT
 const HEIGHT = 400 - MARGIN.TOP - MARGIN.BOTTOM
 
@@ -15,34 +19,46 @@ const tooltip = d3.select("#chart-area")
 	.append("div")
 	.style("opacity", 1)
 	.html("Please select a datapoint to view associated information and available actions")
-	.attr("max-width", 600)
+	.style("max-width", "600px")
 	.attr("class", "tooltip")
+	.style("font-family", "verdana")
+	.style("font-size", "12px")
 	.style("background-color", "white")
 	.style("border", "solid")
 	.style("border-width", "2px")
 	.style("border-radius", "5px")
 	.style("padding", "5px")
 
-d3.json("data/combined.json").then(function(data) {
-	// Create Databank
-    const dataBank = new DataBank()
-	// Add datapoints into databank
-	data.data.forEach(dp => {
-		if (dp.type === "normal") {
-			dataBank.normal.push(new NormalDatapoint(dp.id, dp.x, dp.y))
-		} else if (dp.type === "outlier") {
-			dataBank.outlier.push(new OutlierDatapoint(dp.id, dp.x, dp.y))
-		} else if (dp.type === "uncertain") {
-			dataBank.uncertain.push(new UncertainDatapoint(dp.id, dp.x, dp.y))
-		} else if (dp.type === "corrected") {
-			dataBank.corrected.push(new CorrectedDatapoint(dp.id, dp.x, dp.y))
-		} else if (dp.type === "missing") {
-			dataBank.missing.push(new MissingDatapoint(dp.id, dp.x, dp.y))
-		}
+
+
+getData()
+function getData() {
+	const dataSource = document.getElementById("data-source").value 
+	d3.json(dataSource).then(function(data) {
+		// Create Databank
+		const dataBank = new DataBank()
+		// Set x and y axis
+		dataBank.xAxis = data.x_label
+		dataBank.yAxis = data.y_label
+		// Add datapoints into databank
+		data.data.forEach(dp => {
+			if (dp.type === "normal") {
+				dataBank.normal.push(new NormalDatapoint(dp.id, dp.x, dp.y))
+			} else if (dp.type === "outlier") {
+				dataBank.outlier.push(new OutlierDatapoint(dp.id, dp.x, dp.y))
+			} else if (dp.type === "uncertain") {
+				dataBank.uncertain.push(new UncertainDatapoint(dp.id, dp.x, dp.y))
+			} else if (dp.type === "corrected") {
+				dataBank.corrected.push(new CorrectedDatapoint(dp.id, dp.x, dp.y))
+			} else if (dp.type === "missing") {
+				dataBank.missing.push(new MissingDatapoint(dp.id, dp.x, dp.y))
+			}
+		})
+		
+		update(dataBank)
 	})
-	
-	update(dataBank)
-})
+
+}
 
 
 function update(dataBank) {
@@ -119,26 +135,28 @@ function update(dataBank) {
 	// Scales
 	const x = d3.scaleLinear()
 		.range([0, WIDTH])
-		.domain([0, Math.ceil(dataBank.max()[0])])
+		.domain([Math.floor(dataBank.min()[0]), Math.ceil(dataBank.max()[0])])
 
 	const y = d3.scaleLinear()
 		.range([HEIGHT, 0])
-		.domain([0, Math.ceil(dataBank.max()[1])])
+		.domain([Math.floor(dataBank.min()[1]), Math.ceil(dataBank.max()[1])])
 
 	// Labels
 	const xLabel = g.append("text")
 		.attr("y", HEIGHT + 50)
 		.attr("x", WIDTH / 2)
-		.attr("font-size", "20px")
+		.attr("font-size", "16px")
+		.attr("font-family", "verdana")
 		.attr("text-anchor", "middle")
-		.text("X Label")
+		.text(dataBank.xAxis)
 	const yLabel = g.append("text")
 		.attr("transform", "rotate(-90)")
 		.attr("y", -40)
-		.attr("x", -170)
-		.attr("font-size", "20px")
+		.attr("x", -120)
+		.attr("font-size", "16px")
+		.attr("font-family", "verdana")
 		.attr("text-anchor", "middle")
-		.text("Y Label")
+		.text(dataBank.yAxis)
 
 	// X Axis
 	const xAxisCall = d3.axisBottom(x)
@@ -172,8 +190,8 @@ function update(dataBank) {
 		.on("mousemove", (event, datapoint) => {
 			const text = 
 				datapoint.type.charAt(0).toUpperCase() + datapoint.type.slice(1) + " datapoint<br>" +
-				"x: " + datapoint.x + "<br>" +
-				"y: " + datapoint.y + "<br>" + 
+				"<b>" + dataBank.xAxis + ":</b> " + datapoint.x + "<br>" +
+				"<b>" + dataBank.yAxis + ":</b> " + datapoint.y + "<br>" + 
 				"Click to mark as outlier"
 			mousemove(d3.pointer(event), text)
 		})
@@ -201,8 +219,8 @@ function update(dataBank) {
 		.on("mousemove", (event, datapoint) => {
 			const text = 
 				datapoint.type.charAt(0).toUpperCase() + datapoint.type.slice(1) + " datapoint<br>" +
-				"x: " + datapoint.x + "<br>" +
-				"y: " + datapoint.y + "<br>" + 
+				"<b>" + dataBank.xAxis + ":</b> " + datapoint.x + "<br>" +
+				"<b>" + dataBank.yAxis + ":</b> " + datapoint.y + "<br>" + 
 				"Click to mark as normal"
 			mousemove(d3.pointer(event), text)
 		})
@@ -240,8 +258,8 @@ function update(dataBank) {
 		.on("mousemove", (event, datapoint) => {
 			const text = 
 				datapoint.type.charAt(0).toUpperCase() + datapoint.type.slice(1) + " datapoint<br>" +
-				"x: " + datapoint.x + "<br>" +
-				"y: " + datapoint.y + "<br>" + 
+				"<b>" + dataBank.xAxis + ":</b> " + datapoint.x + "<br>" +
+				"<b>" + dataBank.yAxis + ":</b> " + datapoint.y + "<br>" + 
 				"Click to remove error bars"
 			mousemove(d3.pointer(event), text)
 		})
@@ -286,19 +304,20 @@ function update(dataBank) {
 	missingDatapoints.enter().append("line")
 		.attr("class", "missing")
 		.attr("x1", d => x(d.missingLine.x1))
-		.attr("x2", d => x(d.missingLine.x2))
+		.attr("x2", d => x(d.y_missing? d.x : dataBank.max()[0]))
 		.attr("y1", d => y(d.missingLine.y1))
-		.attr("y2", d => y(d.missingLine.y2))
+		.attr("y2", d => y(d.x_missing? d.y : dataBank.max()[1]))
 		.attr("stroke", "black")
 		.attr("stroke-width", 4)
 		.attr("opacity", 0.1)
 		.on("mouseover", event => mouseoverMissing(event))
 		.on("mousemove", (event, datapoint) => {
+			const imputationFunction = document.getElementById("imputation-function").value
 			const text = 
 				datapoint.type.charAt(0).toUpperCase() + datapoint.type.slice(1) + " datapoint<br>" +
-				"x: " + datapoint.x + "<br>" +
-				"y: " + datapoint.y + "<br>" + 
-				"Click to impute a value"
+				"<b>" + dataBank.xAxis + ":</b> " + datapoint.x + "<br>" +
+				"<b>" + dataBank.yAxis + ":</b> " + datapoint.y + "<br>" + 
+				(imputationFunction === "" ? "Please select an imputation method" : "Click to impute value")
 			mousemove(d3.pointer(event), text)
 		})
 		.on("mouseleave",  event => mouseleaveMissing(event))
@@ -338,10 +357,10 @@ function update(dataBank) {
 		.on("mouseover", event => mouseover(event))
 		.on("mousemove", (event, datapoint) => {
 			const text = 
-				datapoint.type.charAt(0).toUpperCase() + datapoint.type.slice(1) + " datapoint<br>" +
-				"x: " + datapoint.x + "<br>" +
-				"y: " + datapoint.y + "<br>" + 
-				"Click to select corrected datapoint"
+				"Corrected datapoint<br>" +
+				"<b>" + dataBank.xAxis + ":</b> " + datapoint.x + "<br>" +
+				"<b>" + dataBank.yAxis + ":</b> " + datapoint.y + "<br>" + 
+				"Click to choose corrected datapoint"
 			mousemove(d3.pointer(event), text)
 		})
 		.on("mouseleave",  event => mouseleave(event))
@@ -364,10 +383,10 @@ function update(dataBank) {
 		.on("mouseover", event => mouseover(event))
 		.on("mousemove", (event, datapoint) => {
 			const text = 
-				datapoint.type.charAt(0).toUpperCase() + datapoint.type.slice(1) + " datapoint<br>" +
-				"x: " + datapoint.x_original + "<br>" +
-				"y: " + datapoint.y_original + "<br>" + 
-				"Click to select original datapoint"
+				"Uncorrected datapoint<br>" +
+				"<b>" + dataBank.xAxis + ":</b> " + datapoint.x_original + "<br>" +
+				"<b>" + dataBank.yAxis + ":</b> " + datapoint.y_original + "<br>" + 
+				"Click to choose uncorrected datapoint"
 			mousemove(d3.pointer(event), text)
 		})
 		.on("mouseleave",  event => mouseleave(event))

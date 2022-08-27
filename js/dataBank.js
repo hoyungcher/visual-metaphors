@@ -2,7 +2,10 @@
 // Also provides functions for conversion between different datapoint types
 // Also provides functions for implementing statistical functions
 class DataBank {
-    constructor() {
+    constructor(xAxis, yAxis) {
+        // axes
+        this.xAxis = xAxis
+        this.yAxis = yAxis
         // constructs lists for each type of data
         this.normal = []
         this.outlier = []
@@ -96,9 +99,12 @@ class DataBank {
                 } else if (imputationFunction === "mean") {
                     x = this.mean()[0]
                 }
-                const newUncertain = new UncertainDatapoint(dp.id, x, dp.y)
-                newUncertain.xError = true
-                this.uncertain.push(newUncertain)
+                if (imputationFunction !== "delete") {
+                    const newUncertain = new UncertainDatapoint(dp.id, x, dp.y)
+                    newUncertain.xError = true
+                    this.uncertain.push(newUncertain)
+                }
+
                 this.missing = this.missing.filter(dp => dp.id !== id)
                 
             } 
@@ -124,11 +130,12 @@ class DataBank {
                 } else if (imputationFunction === "mean") {
                     y = this.mean()[1]
                 }
-                const newUncertain = new UncertainDatapoint(dp.id, dp.x, y)
-                newUncertain.yError = true
-                this.uncertain.push(newUncertain)
+                if (imputationFunction !== "delete") {
+                    const newUncertain = new UncertainDatapoint(dp.id, dp.x, y)
+                    newUncertain.yError = true
+                    this.uncertain.push(newUncertain)
+                }
                 this.missing = this.missing.filter(dp => dp.id !== id)
-                
             } 
         }
 
