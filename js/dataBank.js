@@ -68,22 +68,34 @@ class DataBank {
         this.outlier = this.outlier.filter(dp => dp.id !== id)
     }
 
-    missingToUncertain(id) {
+    missingToUncertain(id, imputationFunction) {
+        // If no function is selected, return
+        if (imputationFunction === "") {
+            return
+        }
+
         const dp = this.missing.find(dp => dp.id === id)
         if (dp.x_missing) {
+            let x;
             if (dp.y < this.max()[1] && dp.y > this.min()[1]) {
-                // interpolate value
-                const previousDatapoint = this.validDatapoints().filter(d => d.y < dp.y)
-                    .reduce(function(prev, current) {
-                        return (prev.y > current.y) ? prev : current
-                    })
-                const nextDatapoint = this.validDatapoints().filter(d => d.y > dp.y)
-                    .reduce(function(prev, current) {
-                        return (prev.y < current.y) ? prev : current
-                    })
-
-
-                const x = previousDatapoint.x + (dp.y - previousDatapoint.y) * ((nextDatapoint.x - previousDatapoint.x) / (nextDatapoint.y - previousDatapoint.y))
+                if (imputationFunction === "interpolate") {
+                    // interpolate value
+                    const previousDatapoint = this.validDatapoints().filter(d => d.y < dp.y)
+                        .reduce(function(prev, current) {
+                            return (prev.y > current.y) ? prev : current
+                        })
+                    const nextDatapoint = this.validDatapoints().filter(d => d.y > dp.y)
+                        .reduce(function(prev, current) {
+                            return (prev.y < current.y) ? prev : current
+                        })
+    
+    
+                    x = previousDatapoint.x + (dp.y - previousDatapoint.y) * ((nextDatapoint.x - previousDatapoint.x) / (nextDatapoint.y - previousDatapoint.y))
+                } else if (imputationFunction === "zero") {
+                    x = 0
+                } else if (imputationFunction === "mean") {
+                    x = this.mean()[0]
+                }
                 const newUncertain = new UncertainDatapoint(dp.id, x, dp.y)
                 newUncertain.xError = true
                 this.uncertain.push(newUncertain)
@@ -94,18 +106,24 @@ class DataBank {
 
         if (dp.y_missing) {
             if (dp.x < this.max()[0] && dp.x > this.min()[0]) {
-                // interpolate value
-                const previousDatapoint = this.validDatapoints().filter(d => d.x < dp.x)
-                    .reduce(function(prev, current) {
-                        return (prev.x > current.x) ? prev : current
-                    })
-                const nextDatapoint = this.validDatapoints().filter(d => d.x > dp.x)
-                    .reduce(function(prev, current) {
-                        return (prev.x < current.x) ? prev : current
-                    })
-                
-                const y = previousDatapoint.y + (dp.x - previousDatapoint.x) * ((nextDatapoint.y - previousDatapoint.y) / (nextDatapoint.x - previousDatapoint.x))
-                console.log(y)
+                let y
+                if (imputationFunction === "interpolate") {
+                    // interpolate value
+                    const previousDatapoint = this.validDatapoints().filter(d => d.x < dp.x)
+                        .reduce(function(prev, current) {
+                            return (prev.x > current.x) ? prev : current
+                        })
+                    const nextDatapoint = this.validDatapoints().filter(d => d.x > dp.x)
+                        .reduce(function(prev, current) {
+                            return (prev.x < current.x) ? prev : current
+                        })
+                    
+                    y = previousDatapoint.y + (dp.x - previousDatapoint.x) * ((nextDatapoint.y - previousDatapoint.y) / (nextDatapoint.x - previousDatapoint.x))
+                } else if (imputationFunction === "zero") {
+                    y = 0
+                } else if (imputationFunction === "mean") {
+                    y = this.mean()[1]
+                }
                 const newUncertain = new UncertainDatapoint(dp.id, dp.x, y)
                 newUncertain.yError = true
                 this.uncertain.push(newUncertain)

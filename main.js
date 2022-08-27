@@ -9,42 +9,6 @@ const svg = d3.select("#chart-area").append("svg")
 const g = svg.append("g")
     .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
 
-// // Scales
-// const x = d3.scaleLinear()
-//     .range([0, WIDTH])
-//     .domain([0, 10])
-
-// const y = d3.scaleLinear()
-//     .range([HEIGHT, 0])
-//     .domain([0, 50])
-
-// // Labels
-// const xLabel = g.append("text")
-// 	.attr("y", HEIGHT + 50)
-// 	.attr("x", WIDTH / 2)
-// 	.attr("font-size", "20px")
-// 	.attr("text-anchor", "middle")
-// 	.text("X Label")
-// const yLabel = g.append("text")
-// 	.attr("transform", "rotate(-90)")
-// 	.attr("y", -40)
-// 	.attr("x", -170)
-// 	.attr("font-size", "20px")
-// 	.attr("text-anchor", "middle")
-// 	.text("Y Label")
-
-// // X Axis
-// const xAxisCall = d3.axisBottom(x)
-// g.append("g")
-// 	.attr("class", "x axis")
-// 	.attr("transform", `translate(0, ${HEIGHT})`)
-// 	.call(xAxisCall)
-
-// // Y Axis
-// const yAxisCall = d3.axisLeft(y)
-// g.append("g")
-// 	.attr("class", "y axis")
-// 	.call(yAxisCall)
 
 // Tooltip
 const tooltip = d3.select("#chart-area")
@@ -101,7 +65,7 @@ function update(dataBank) {
 		}
 	})
 
-
+	// Events
 	const mouseover = (event) => {
 		tooltip
 			.style("opacity", 1)
@@ -133,7 +97,6 @@ function update(dataBank) {
 
 	const mouseleave = (event) => {
 		tooltip
-			// .style("opacity", 0)
 			.html("Please select a datapoint to view associated information and available actions")
 		d3.select(event.target)
 			.style("stroke", "none")
@@ -142,7 +105,6 @@ function update(dataBank) {
 	const mouseleaveMissing = (event) => {
 		tooltip
 		.html("Please select a datapoint to view associated information and available actions")
-			// .style("opacity", 0)
 		d3.select(event.target)
 			.style("opacity", 0.1)
 	}
@@ -150,7 +112,6 @@ function update(dataBank) {
 	const mouseleaveUncertain = (event) => {
 		tooltip
 		.html("Please select a datapoint to view associated information and available actions")
-			// .style("opacity", 0)
 		d3.select(event.target)
 			.style("stroke-width", 1)
 	}
@@ -342,7 +303,8 @@ function update(dataBank) {
 		})
 		.on("mouseleave",  event => mouseleaveMissing(event))
 		.on("click", function(event, datapoint) {
-			dataBank.missingToUncertain(datapoint.id)
+			const imputationFunction = document.getElementById("imputation-function").value
+			dataBank.missingToUncertain(datapoint.id, imputationFunction)
 			update(dataBank)
 		})
 	

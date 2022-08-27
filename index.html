@@ -5,6 +5,14 @@
         
     </head>
     <body>
+        <label for="imputation-function">Missing Data :</label>
+        <select name="imputation" id="imputation-function">
+            <option value="">--Please choose an option--</option>
+            <option value="interpolate">Interpolate</option>
+            <option value="mean">Mean</option>
+            <option value="zero">Zero</option>
+            <option value="delete">Delete data point</option>
+        </select>
         <div id="chart-area"></div>
         <script src="https://d3js.org/d3.v7.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
