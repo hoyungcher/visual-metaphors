@@ -1,7 +1,7 @@
 // SVG dimensions
 const MARGIN = { LEFT: 80, RIGHT: 20, TOP: 40, BOTTOM: 80 }
-const WIDTH = 600 - MARGIN.LEFT - MARGIN.RIGHT
-const HEIGHT = 400 - MARGIN.TOP - MARGIN.BOTTOM
+const WIDTH = 720 - MARGIN.LEFT - MARGIN.RIGHT
+const HEIGHT = 480 - MARGIN.TOP - MARGIN.BOTTOM
 
 const svg = d3.select("#chart-area").append("svg")
     .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
@@ -52,19 +52,19 @@ const tooltip = d3.select("#chart-area")
 	.append("div")
 	.style("opacity", 1)
 	.html("Please select a datapoint to view associated information and available actions")
-	.style("max-width", "600px")
+	.style("max-width", "720px")
 	.attr("class", "tooltip")
 	.style("font-family", "verdana")
-	.style("font-size", "12px")
+	.style("font-size", "14px")
 	.style("background-color", "white")
 	.style("border", "solid")
 	.style("border-width", "2px")
 	.style("border-radius", "5px")
 	.style("padding", "5px")
 
-
-
 getData()
+
+// Function to load data from different links
 function getData() {
 	const dataSource = document.getElementById("data-source").value 
 	d3.json(dataSource).then(function(data) {
@@ -93,7 +93,7 @@ function getData() {
 
 }
 
-
+// Redraw each component on chart
 function update(dataBank) {
 	// Calculate errorbars and add into databank
 	dataBank.uncertain.forEach(dp => {
