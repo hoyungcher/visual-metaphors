@@ -102,6 +102,8 @@ class DataBank {
                 if (imputationFunction !== "delete") {
                     const newUncertain = new UncertainDatapoint(dp.id, x, dp.y)
                     newUncertain.xError = true
+                    newUncertain.xErrorFunction = "std-deviation"
+                    newUncertain.xErrorValue = 1
                     this.uncertain.push(newUncertain)
                 }
 
@@ -133,6 +135,8 @@ class DataBank {
                 if (imputationFunction !== "delete") {
                     const newUncertain = new UncertainDatapoint(dp.id, dp.x, y)
                     newUncertain.yError = true
+                    newUncertain.yErrorFunction = "std-deviation"
+                    newUncertain.yErrorValue = 1
                     this.uncertain.push(newUncertain)
                 }
                 this.missing = this.missing.filter(dp => dp.id !== id)

@@ -1,8 +1,5 @@
-// Dataset links
-
-
 // SVG dimensions
-const MARGIN = { LEFT: 80, RIGHT: 20, TOP: 20, BOTTOM: 80 }
+const MARGIN = { LEFT: 80, RIGHT: 20, TOP: 40, BOTTOM: 80 }
 const WIDTH = 600 - MARGIN.LEFT - MARGIN.RIGHT
 const HEIGHT = 400 - MARGIN.TOP - MARGIN.BOTTOM
 
@@ -12,6 +9,42 @@ const svg = d3.select("#chart-area").append("svg")
 
 const g = svg.append("g")
     .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
+
+
+// Scales
+const x = d3.scaleLinear()
+	.range([0, WIDTH])
+
+const y = d3.scaleLinear()
+	.range([HEIGHT, 0])
+
+// Axis generators
+const xAxisCall = d3.axisBottom()
+const yAxisCall = d3.axisLeft()
+
+// Axis groups
+const xAxis = g.append("g")
+	.attr("class", "x axis")
+	.attr("transform", `translate(0, ${HEIGHT})`)
+
+const yAxis = g.append("g")
+	.attr("class", "y axis")
+
+// Labels
+const xLabel = g.append("text")
+	.attr("y", HEIGHT + 50)
+	.attr("x", WIDTH / 2)
+	.attr("font-size", "16px")
+	.attr("font-family", "verdana")
+	.attr("text-anchor", "middle")
+
+const yLabel = g.append("text")
+	.attr("transform", "rotate(-90)")
+	.attr("y", -40)
+	.attr("x", -120)
+	.attr("font-size", "16px")
+	.attr("font-family", "verdana")
+	.attr("text-anchor", "middle")
 
 
 // Tooltip
@@ -65,19 +98,39 @@ function update(dataBank) {
 	// Calculate errorbars and add into databank
 	dataBank.uncertain.forEach(dp => {
 		if (dp.xError) {
-			const deviation = dataBank.deviation()[0]
-			dp.xErrorBar.x1 = dp.x - deviation
-			dp.xErrorBar.x2 = dp.x + deviation
+			let error;
+			if (dp.xErrorFunction === "std-deviation") {
+				error = dataBank.deviation()[0]
+			} 
+			if (dp.xErrorFunction === "absolute") {
+				error = dp.xErrorValue
+			} 
+			if (dp.xErrorFunction === "percentage") {
+				error = (dp.xErrorValue * dp.x) / 100
+			}
+			dp.xErrorAbsolute = error
+			dp.xErrorBar.x1 = dp.x - error
+			dp.xErrorBar.x2 = dp.x + error
 			dp.xErrorBar.y1 = dp.y
 			dp.xErrorBar.y2 = dp.y
 		}
 
 		if (dp.yError) {
-			const deviation = dataBank.deviation()[0]
+			let error;
+			if (dp.yErrorFunction === "std-deviation") {
+				error = dataBank.deviation()[1]
+			} 
+			if (dp.yErrorFunction === "absolute") {
+				error = dp.yErrorValue
+			} 
+			if (dp.yErrorFunction === "percentage") {
+				error = (dp.yErrorValue * dp.y) / 100
+			}
+			dp.yErrorAbsolute = error
 			dp.yErrorBar.x1 = dp.x
 			dp.yErrorBar.x2 = dp.x
-			dp.yErrorBar.y1 = dp.y - deviation
-			dp.yErrorBar.y2 = dp.y + deviation
+			dp.yErrorBar.y1 = dp.y - error
+			dp.yErrorBar.y2 = dp.y + error
 		}
 	})
 
@@ -132,44 +185,16 @@ function update(dataBank) {
 			.style("stroke-width", 1)
 	}
 
-	// Scales
-	const x = d3.scaleLinear()
-		.range([0, WIDTH])
-		.domain([Math.floor(dataBank.min()[0]), Math.ceil(dataBank.max()[0])])
+	// Update scales
+	x.domain([Math.floor(dataBank.min()[0]), Math.ceil(dataBank.max()[0])])
+	y.domain([Math.floor(dataBank.min()[1]), Math.ceil(dataBank.max()[1])])
+	xAxisCall.scale(x)
+	xAxis.call(xAxisCall)
+	yAxisCall.scale(y)
+	yAxis.call(yAxisCall)
 
-	const y = d3.scaleLinear()
-		.range([HEIGHT, 0])
-		.domain([Math.floor(dataBank.min()[1]), Math.ceil(dataBank.max()[1])])
-
-	// Labels
-	const xLabel = g.append("text")
-		.attr("y", HEIGHT + 50)
-		.attr("x", WIDTH / 2)
-		.attr("font-size", "16px")
-		.attr("font-family", "verdana")
-		.attr("text-anchor", "middle")
-		.text(dataBank.xAxis)
-	const yLabel = g.append("text")
-		.attr("transform", "rotate(-90)")
-		.attr("y", -40)
-		.attr("x", -120)
-		.attr("font-size", "16px")
-		.attr("font-family", "verdana")
-		.attr("text-anchor", "middle")
-		.text(dataBank.yAxis)
-
-	// X Axis
-	const xAxisCall = d3.axisBottom(x)
-	g.append("g")
-		.attr("class", "x axis")
-		.attr("transform", `translate(0, ${HEIGHT})`)
-		.call(xAxisCall)
-
-	// Y Axis
-	const yAxisCall = d3.axisLeft(y)
-	g.append("g")
-		.attr("class", "y axis")
-		.call(yAxisCall)
+	xLabel.text(dataBank.xAxis)
+	yLabel.text(dataBank.yAxis)
 
 
 
@@ -256,10 +281,20 @@ function update(dataBank) {
 		.attr("stroke-width", 1)
 		.on("mouseover", event => mouseoverUncertain(event))
 		.on("mousemove", (event, datapoint) => {
+			let errorDescription
+			if (datapoint.xErrorFunction === "std-deviation") {
+				errorDescription = " (" + datapoint.xErrorValue + " Standard Deviation)"
+			}
+			if (datapoint.xErrorFunction === "percentage") {
+				errorDescription = " (" + datapoint.xErrorValue + "%)"
+			}
+			if (datapoint.xErrorFunction === "std-deviation") {
+				errorDescription = " (absolute value)"
+			}
 			const text = 
 				datapoint.type.charAt(0).toUpperCase() + datapoint.type.slice(1) + " datapoint<br>" +
 				"<b>" + dataBank.xAxis + ":</b> " + datapoint.x + "<br>" +
-				"<b>" + dataBank.yAxis + ":</b> " + datapoint.y + "<br>" + 
+				"<b>" + dataBank.yAxis + ":</b> " + datapoint.y + " ± " + datapoint.yErrorAbsolute + errorDescription + "<br>" + 
 				"Click to remove error bars"
 			mousemove(d3.pointer(event), text)
 		})
@@ -283,11 +318,21 @@ function update(dataBank) {
 		.attr("stroke-width", 1)
 		.on("mouseover", event => mouseoverUncertain(event))
 		.on("mousemove", (event, datapoint) => {
+			let errorDescription
+			if (datapoint.yErrorFunction === "std-deviation") {
+				errorDescription = " (" + datapoint.yErrorValue + " Standard Deviation)"
+			}
+			if (datapoint.yErrorFunction === "percentage") {
+				errorDescription = " (" + datapoint.yErrorValue + "%)"
+			}
+			if (datapoint.yErrorFunction === "std-deviation") {
+				errorDescription = " (absolute value)"
+			}
 			const text = 
 				datapoint.type.charAt(0).toUpperCase() + datapoint.type.slice(1) + " datapoint<br>" +
-				"x: " + datapoint.x + "<br>" +
-				"y: " + datapoint.y + "<br>" + 
-				"Click to remove error bars"
+				"<b>" + dataBank.xAxis + ":</b> " + datapoint.x + "<br>" +
+				"<b>" + dataBank.yAxis + ":</b> " + datapoint.y + " ± " + datapoint.yErrorAbsolute + errorDescription + "<br>"
+				"Click to remove error bar"
 			mousemove(d3.pointer(event), text)
 		})
 		.on("mouseleave",  event => mouseleaveUncertain(event))
@@ -356,10 +401,11 @@ function update(dataBank) {
 		.attr("fill", "grey")
 		.on("mouseover", event => mouseover(event))
 		.on("mousemove", (event, datapoint) => {
+			console.log(datapoint)
 			const text = 
 				"Corrected datapoint<br>" +
-				"<b>" + dataBank.xAxis + ":</b> " + datapoint.x + "<br>" +
-				"<b>" + dataBank.yAxis + ":</b> " + datapoint.y + "<br>" + 
+				"<b>" + dataBank.xAxis + ":</b> " + datapoint.x + (datapoint.x_corrected ? " (Uncorrected value: " + datapoint.x_original + ")" : "") +"<br>" +
+				"<b>" + dataBank.yAxis + ":</b> " + datapoint.y + (datapoint.y_corrected ? " (Uncorrected value: " + datapoint.y_original + ")" : "") + "<br>" + 
 				"Click to choose corrected datapoint"
 			mousemove(d3.pointer(event), text)
 		})
@@ -384,8 +430,8 @@ function update(dataBank) {
 		.on("mousemove", (event, datapoint) => {
 			const text = 
 				"Uncorrected datapoint<br>" +
-				"<b>" + dataBank.xAxis + ":</b> " + datapoint.x_original + "<br>" +
-				"<b>" + dataBank.yAxis + ":</b> " + datapoint.y_original + "<br>" + 
+				"<b>" + dataBank.xAxis + ":</b> " + datapoint.x_original + (datapoint.x_corrected? " (Corrected value: " + datapoint.x + ")": "") + "<br>" +
+				"<b>" + dataBank.yAxis + ":</b> " + datapoint.y_original + (datapoint.y_corrected? " (Corrected value: " + datapoint.y + ")": "") +"<br>" + 
 				"Click to choose uncorrected datapoint"
 			mousemove(d3.pointer(event), text)
 		})

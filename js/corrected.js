@@ -14,10 +14,10 @@ class CorrectedDatapoint {
         if (typeof(y) === "object") {
             this.y = y.corrected
             this.y_original = y.original
+            this.y_corrected = true
         } else {
             this.y = y
             this.y_original = y
-            this.y_corrected = true
         }
         this.type = "corrected"
     }

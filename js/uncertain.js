@@ -11,12 +11,16 @@ class UncertainDatapoint {
         if (typeof(x) === "object") {
             this.x = x.value
             this.xError = true
+            this.xErrorFunction = x.function
+            this.xErrorValue = x.error
         } else {
             this.x = x
         }
         if (typeof(y) === "object") {
             this.y = y.value
             this.yError = true
+            this.yErrorFunction = y.function
+            this.yErrorValue = y.error
         } else {
             this.y = y
         }
