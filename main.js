@@ -51,7 +51,7 @@ const yLabel = g.append("text")
 const tooltip = d3.select("#chart-area")
 	.append("div")
 	.style("opacity", 1)
-	.html("Please select a datapoint to view associated information and available actions")
+	.html("Please hover over a datapoint to view associated information and available actions")
 	.style("max-width", "720px")
 	.attr("class", "tooltip")
 	.style("font-family", "verdana")
@@ -166,21 +166,21 @@ function update(dataBank) {
 
 	const mouseleave = (event) => {
 		tooltip
-			.html("Please select a datapoint to view associated information and available actions")
+			.html("Please hover over a datapoint to view associated information and available actions")
 		d3.select(event.target)
 			.style("stroke", "none")
 	}
 
 	const mouseleaveMissing = (event) => {
 		tooltip
-		.html("Please select a datapoint to view associated information and available actions")
+		.html("Please hover over a datapoint to view associated information and available actions")
 		d3.select(event.target)
 			.style("opacity", 0.1)
 	}
 
 	const mouseleaveUncertain = (event) => {
 		tooltip
-		.html("Please select a datapoint to view associated information and available actions")
+		.html("Please hover over a datapoint to view associated information and available actions")
 		d3.select(event.target)
 			.style("stroke-width", 1)
 	}
