@@ -22,7 +22,14 @@
                 <option value="interpolate">Interpolate</option>
                 <option value="mean">Mean</option>
                 <option value="zero">Zero</option>
-                <option value="delete">Delete data point</option>
+                <option value="delete">Remove data point</option>
+            </select>
+            <br />
+            <label for="outlier-action" style="font-family:verdana; font-size:14px">Outlier action:</label>
+            <select name="outlier" id="outlier-action">
+                <option value="">--Please choose an option--</option>
+                <option value="unmark">Unmark outlier</option>
+                <option value="delete">Remove data point</option>
             </select>
             <br />
             <div id="chart-area"></div>

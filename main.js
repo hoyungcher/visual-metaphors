@@ -242,16 +242,23 @@ function update(dataBank) {
 		.attr("fill", "red")
 		.on("mouseover", event => mouseover(event))
 		.on("mousemove", (event, datapoint) => {
+			const outlierAction = document.getElementById("outlier-action").value
 			const text = 
 				datapoint.type.charAt(0).toUpperCase() + datapoint.type.slice(1) + " datapoint<br>" +
 				"<b>" + dataBank.xAxis + ":</b> " + datapoint.x + "<br>" +
 				"<b>" + dataBank.yAxis + ":</b> " + datapoint.y + "<br>" + 
-				"Click to mark as normal"
+				(outlierAction === "" ? "Please select an imputation method" : (outlierAction === "delete" ? "Click to remove data point" : "Click to unmark data point as outlier"))
 			mousemove(d3.pointer(event), text)
 		})
 		.on("mouseleave",  event => mouseleave(event))
 		.on("click", function(event, datapoint) {
-			dataBank.outlierToNormal(datapoint.id)
+			const outlierAction = document.getElementById("outlier-action").value
+			if (outlierAction == "unmark") {
+				dataBank.outlierToNormal(datapoint.id)
+			}
+			if (outlierAction == "delete") {
+				dataBank.removeOutlier(datapoint.id)
+			}
 			update(dataBank)
 		})
 

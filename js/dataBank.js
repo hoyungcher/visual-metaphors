@@ -71,6 +71,10 @@ class DataBank {
         this.outlier = this.outlier.filter(dp => dp.id !== id)
     }
 
+    removeOutlier(id) {
+        this.outlier = this.outlier.filter(dp => dp.id !== id)
+    }
+
     missingToUncertain(id, imputationFunction) {
         // If no function is selected, return
         if (imputationFunction === "") {
