@@ -1,2 +1,3 @@
-# visual-metaphors
-Developing visual metaphors for the representation of uncertain and unknown data
+# Explora
+An Interactive Data Cleaning and Visualisation Tool for Unknown and Uncertain Data
+
